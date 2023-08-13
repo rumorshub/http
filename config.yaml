@@ -1,0 +1,26 @@
+http:
+  max_request_size: 1000 # 1000Mb
+  address: 0.0.0.0:80 # host and port to handle as http server (NOT HTTPS)
+  middleware:
+    - name1
+    - name2
+  ssl:
+    address: 0.0.0.0:443
+    redirect: false # when true forces all http connections to switch to https
+    key: private.key
+    cert: cert.key
+    root_ca: root.key
+    client_auth_type: no_client_cert
+    acme:
+      cache_dir: cache_dir
+      email: info@domain.com
+      challenge_type: http-01
+      alt_http_port: 80
+      alt_tlsalpn_port: 0
+      use_production_endpoint: true
+      domains:
+        - domain.com
+        - domain2.com
+  http2:
+    h2c: false
+    max_concurrent_streams: 128
