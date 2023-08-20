@@ -9,6 +9,7 @@ import (
 
 	"github.com/roadrunner-server/endure/v2/dep"
 	"github.com/roadrunner-server/errors"
+	"go.uber.org/zap"
 
 	"github.com/rumorshub/http/config"
 	"github.com/rumorshub/http/middleware"
@@ -32,6 +33,7 @@ type Plugin struct {
 
 	log    *slog.Logger
 	stdLog *log.Logger
+	zapLog *zap.Logger
 
 	cfg *config.Config
 
@@ -59,6 +61,7 @@ func (p *Plugin) Init(cfg Configurer, logger Logger) error {
 	}
 
 	p.log = logger.NamedLogger(PluginName)
+	p.zapLog = logger.NamedZapLogger(PluginName)
 	p.stdLog = log.New(NewStdAdapter(p.log), "http_plugin: ", log.Ldate|log.Ltime|log.LUTC)
 	p.mdwr = make(map[string]middleware.Middleware)
 	p.servers = make([]internalServer, 0, 2)
@@ -161,7 +164,7 @@ func (p *Plugin) initServers() error {
 	}
 
 	if p.cfg.EnableTLS() {
-		https, err := httpsServer.NewHTTPSServer(p, p.cfg.SSL, p.cfg.HTTP2, p.stdLog, p.log)
+		https, err := httpsServer.NewHTTPSServer(p, p.cfg.SSL, p.cfg.HTTP2, p.stdLog, p.log, p.zapLog)
 		if err != nil {
 			return err
 		}

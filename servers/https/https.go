@@ -37,6 +37,7 @@ import (
 
 	"github.com/mholt/acmez"
 	rrErrors "github.com/roadrunner-server/errors"
+	"go.uber.org/zap"
 	"golang.org/x/sys/cpu"
 
 	"github.com/rumorshub/http/middleware"
@@ -49,7 +50,7 @@ type Server struct {
 	https *http.Server
 }
 
-func NewHTTPSServer(handler http.Handler, cfg *SSLConfig, cfgHTTP2 *HTTP2Config, errLog *log.Logger, logger *slog.Logger) (*Server, error) {
+func NewHTTPSServer(handler http.Handler, cfg *SSLConfig, cfgHTTP2 *HTTP2Config, errLog *log.Logger, sLog *slog.Logger, zapLog *zap.Logger) (*Server, error) {
 	httpsServer := initTLS(handler, errLog, cfg.Address, cfg.Port)
 
 	if cfg.RootCA != "" {
@@ -87,7 +88,7 @@ func NewHTTPSServer(handler http.Handler, cfg *SSLConfig, cfgHTTP2 *HTTP2Config,
 			cfg.Acme.UseProductionEndpoint,
 			cfg.Acme.AltHTTPPort,
 			cfg.Acme.AltTLSALPNPort,
-			logger,
+			zapLog,
 		)
 
 		if err != nil {
@@ -107,7 +108,7 @@ func NewHTTPSServer(handler http.Handler, cfg *SSLConfig, cfgHTTP2 *HTTP2Config,
 
 	return &Server{
 		cfg:   cfg,
-		log:   logger,
+		log:   sLog,
 		https: httpsServer,
 	}, nil
 }

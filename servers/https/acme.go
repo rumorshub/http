@@ -25,10 +25,10 @@ package https
 import (
 	"context"
 	"crypto/tls"
-	"log/slog"
 	"time"
 
 	"github.com/caddyserver/certmagic"
+	"go.uber.org/zap"
 )
 
 type challenge string
@@ -38,9 +38,7 @@ const (
 	TLSAlpn01 challenge = "tlsalpn-01"
 )
 
-func IssueCertificates(cacheDir, email, challengeType string, domains []string, useProduction bool, altHTTPPort, altTLSAlpnPort int, log *slog.Logger) (*tls.Config, error) {
-	zl := newZap(log)
-
+func IssueCertificates(cacheDir, email, challengeType string, domains []string, useProduction bool, altHTTPPort, altTLSAlpnPort int, log *zap.Logger) (*tls.Config, error) {
 	cache := certmagic.NewCache(certmagic.CacheOptions{
 		GetConfigForCert: func(c certmagic.Certificate) (*certmagic.Config, error) {
 			return &certmagic.Config{
@@ -48,7 +46,7 @@ func IssueCertificates(cacheDir, email, challengeType string, domains []string, 
 				MustStaple:         false,
 				OCSP:               certmagic.OCSPConfig{},
 				Storage:            &certmagic.FileStorage{Path: cacheDir},
-				Logger:             zl,
+				Logger:             log,
 			}, nil
 		},
 		OCSPCheckInterval:  0,
@@ -61,7 +59,7 @@ func IssueCertificates(cacheDir, email, challengeType string, domains []string, 
 		MustStaple:         false,
 		OCSP:               certmagic.OCSPConfig{},
 		Storage:            &certmagic.FileStorage{Path: cacheDir},
-		Logger:             zl,
+		Logger:             log,
 	})
 
 	myAcme := certmagic.NewACMEIssuer(cfg, certmagic.ACMEIssuer{
@@ -76,7 +74,7 @@ func IssueCertificates(cacheDir, email, challengeType string, domains []string, 
 		AltTLSALPNPort:          altTLSAlpnPort,
 		CertObtainTimeout:       time.Second * 240,
 		PreferredChains:         certmagic.ChainPreference{},
-		Logger:                  zl,
+		Logger:                  log,
 	})
 
 	if !useProduction {

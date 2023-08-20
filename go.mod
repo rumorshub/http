@@ -3,10 +3,10 @@ module github.com/rumorshub/http
 go 1.21.0
 
 require (
-	github.com/caddyserver/certmagic v0.19.1
+	github.com/caddyserver/certmagic v0.19.2
 	github.com/google/uuid v1.3.0
 	github.com/mholt/acmez v1.2.0
-	github.com/roadrunner-server/endure/v2 v2.4.1
+	github.com/roadrunner-server/endure/v2 v2.4.2
 	github.com/roadrunner-server/errors v1.3.0
 	github.com/roadrunner-server/tcplisten v1.4.0
 	go.uber.org/zap v1.25.0
