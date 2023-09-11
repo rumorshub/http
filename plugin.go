@@ -147,7 +147,7 @@ func (p *Plugin) Collects() []*dep.In {
 				p.mdwr[mdwr.(middleware.Middleware).Name()] = mdwr.(middleware.Middleware)
 			}
 			p.mu.Unlock()
-		}, (*middleware.Middleware)(nil)),
+		}, (*middleware.Middlewares)(nil)),
 		dep.Fits(func(pp interface{}) {
 			handler := pp.(http.Handler)
 
