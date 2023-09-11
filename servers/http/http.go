@@ -90,13 +90,11 @@ func NewHTTPServer(handler http.Handler, cfg *config.Config, errLog *log.Logger,
 func (s *Server) Start(mdwr map[string]middleware.Middleware, order []string) error {
 	const op = rrErrors.Op("serveHTTP")
 
-	if len(mdwr) > 0 {
-		for i := 0; i < len(order); i++ {
-			if m, ok := mdwr[order[i]]; ok {
-				s.http.Handler = m.Middleware(s.http.Handler)
-			} else {
-				s.log.Warn("requested middleware does not exist", "requested", order[i])
-			}
+	for i := 0; i < len(order); i++ {
+		if m, ok := mdwr[order[i]]; ok {
+			s.http.Handler = m.Middleware(s.http.Handler)
+		} else {
+			s.log.Warn("requested middleware does not exist", "requested", order[i])
 		}
 	}
 

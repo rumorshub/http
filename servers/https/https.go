@@ -116,13 +116,11 @@ func NewHTTPSServer(handler http.Handler, cfg *SSLConfig, cfgHTTP2 *HTTP2Config,
 func (s *Server) Start(mdwr map[string]middleware.Middleware, order []string) error {
 	const op = rrErrors.Op("serveHTTPS")
 
-	if len(mdwr) > 0 {
-		for i := 0; i < len(order); i++ {
-			if m, ok := mdwr[order[i]]; ok {
-				s.https.Handler = m.Middleware(s.https.Handler)
-			} else {
-				s.log.Warn("requested middleware does not exist", "requested", order[i])
-			}
+	for i := 0; i < len(order); i++ {
+		if m, ok := mdwr[order[i]]; ok {
+			s.https.Handler = m.Middleware(s.https.Handler)
+		} else {
+			s.log.Warn("requested middleware does not exist", "requested", order[i])
 		}
 	}
 
